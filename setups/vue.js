@@ -1,7 +1,9 @@
 const map = require('../lib/map-src')('vue')
 
 module.exports = {
-  mods: { browserslist: ['last 2 versions', 'not ie <= 9'] },
+  mods: {
+    replace: { browserslist: ['last 2 versions', 'not ie <= 9'] }
+  },
   files: [
     map('src/sass/'),
     map('index.html'),
