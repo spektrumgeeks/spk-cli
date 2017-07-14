@@ -13,5 +13,13 @@
     "spk-cli"
   ],
   "author": "Spektrum Media <geeks@spektrummedia.com>",
-  "license": "ISC"
+  "license": "ISC",
+  "bin": {
+    "spk": "bin/spk"
+  },
+  "dependencies": {
+    "ora": "^1.3.0",
+    "shelljs": "^0.7.8",
+    "yargs": "^8.0.2"
+  }
 }
