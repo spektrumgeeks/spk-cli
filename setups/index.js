@@ -1,3 +1,3 @@
 module.exports = {
-  vue: require('./vue-setup')
+  vue: require('./vue')
 }

@@ -1,0 +1,24 @@
+#!/usr/bin/env node
+const setups = require('../setups')
+
+const use = {
+  files: require('../lib/use-files'),
+  dirs: require('../lib/use-dirs'),
+  deps: require('../lib/use-deps')
+}
+
+module.exports = argsv => {
+  let files, mods, dirs, deps
+  let setup = setups[argsv.setup]
+
+  if (!setup) return console.log(`Sorry, no setup found by the name ${argsv.setup}`)
+
+  files = setup.files
+  mods = setup.mods
+  dirs = setup.dirs
+  deps = setup.deps
+
+  if (files || mods) use.files(files, mods, argsv)
+  if (dirs) use.dirs(dirs, argsv)
+  if (deps) use.deps(deps, argsv)
+}

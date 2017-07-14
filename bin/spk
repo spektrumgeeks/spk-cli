@@ -1,14 +1,14 @@
 #!/usr/bin/env node
 const yargs = require('yargs')
-const resolveSetup = require('../lib/resolve-setup')
+const use = require('./spk-use')
 
 yargs
-  .usage('Usage: $0 <use | list> <setup> [-s | -i | -l] [-f [file ...] | -d [dir ...]]')
+  .usage('Usage: $0 <list | use> <setup> [-s | -i | -l] [-f [file ...] | -d [dir ...]]\n       -> See README.md in repo for more details <-')
   .command({
     command: 'use <setup>',
     aliases: 'u',
     desc: 'Get shit done with one of our setups',
-    handler: resolveSetup
+    handler: use
   })
   .command({
     command: 'list',
