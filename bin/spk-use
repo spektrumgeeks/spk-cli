@@ -1,24 +1,11 @@
 #!/usr/bin/env node
-const setups = require('../setups')
 
-const use = {
-  files: require('../lib/use-files'),
-  dirs: require('../lib/use-dirs'),
-  deps: require('../lib/use-deps')
-}
+const use = require('../lib/use').default
+const program = require('commander')
 
-module.exports = argsv => {
-  let files, mods, dirs, deps
-  let setup = setups[argsv.setup]
+program
+  .option('-l, --list', 'List the template\'s contents')
+  .option('-s, --skip', 'Skip files that already exist')
+  .parse(process.argv)
 
-  if (!setup) return console.log(`Sorry, no setup found by the name ${argsv.setup}`)
-
-  files = setup.files
-  mods = setup.mods
-  dirs = setup.dirs
-  deps = setup.deps
-
-  if (files || mods) use.files(files, mods, argsv)
-  if (dirs) use.dirs(dirs, argsv)
-  if (deps) use.deps(deps, argsv)
-}
+use(program.args[0], program)

@@ -1,51 +1,13 @@
 #!/usr/bin/env node
-const yargs = require('yargs')
-const use = require('./spk-use')
 
-yargs
-  .usage('Usage: $0 <list | use> <setup> [-s | -i | -l] [-f [file ...] | -d [dir ...]]\n       -> See README.md in repo for more details <-')
-  .command({
-    command: 'use <setup>',
-    aliases: 'u',
-    desc: 'Get shit done with one of our setups',
-    handler: use
-  })
-  .command({
-    command: 'list',
-    aliases: ['ls'],
-    desc: 'Get a list of setups (WIP)',
-    handler: argv => {
-      console.log(argv)
-    }
-  })
-  .options({
-    's': {
-      desc: 'Keeps your shit, skips existing files',
-      alias: ['skip', 'safe'],
-      boolean: true
-    },
-    'i': {
-      desc: 'Let npm take a dump in your project',
-      alias: ['install'],
-      boolean: true
-    },
-    'l': {
-      desc: 'List some or all the shit in a setup',
-      alias: ['ls', 'list'],
-      boolean: true
-    },
-    'f': {
-      desc: 'Know your shit? Get only what you need',
-      alias: ['file', 'files'],
-      array: true
-    },
-    'd': {
-      desc: 'Auto-generate directories, you lazy bum',
-      alias: ['dir', 'dirs'],
-      array: true
-    }
-  })
-  .help('h', 'Figure out why your life went so wrong')
-  .alias('h', ['help', 'holy-shit-wtf'])
-  .demandCommand()
-  .argv
+const ascii = require('../ascii')
+const program = require('commander')
+const version = require('../package.json').version
+const desc = require('../lib/config').default.description
+
+program
+  .version(version)
+  .description(desc + ascii)
+  .command('use [template]', 'Get shit done with a project template').alias('u')
+  .command('run [tool]', 'Run a processing tool on local assets').alias('r')
+  .parse(process.argv)

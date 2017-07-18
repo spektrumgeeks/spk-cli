@@ -2,8 +2,7 @@
   "ecmaVersion": 6,
   "libs": [],
   "loadEagerly": [
-    "lib/*.js",
-    "packages/*.js"
+    "src/**/*.js"
   ],
   "dontLoad": [
     "node_modules/**"
@@ -28,6 +27,7 @@
       "baseURL": "",
       "paths": "",
       "override": ""
-    }
+    },
+    "es_modules": {}
   }
 }
