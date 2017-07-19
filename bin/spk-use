@@ -5,7 +5,7 @@ const program = require('commander')
 
 program
   .option('-l, --list', 'List the template\'s contents')
-  .option('-s, --skip', 'Skip files that already exist')
+  .option('-s, --safe', 'Don\'t overwrite or delete files')
   .parse(process.argv)
 
 use(program.args[0], program)

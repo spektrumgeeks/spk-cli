@@ -1,3 +1,1 @@
-module.exports = {
-  vue: require('./vue/config.json')
-}
+exports.vue = require('./vue/config.js')

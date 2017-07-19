@@ -1,6 +1,6 @@
 #!/usr/bin/env node
 
-const ascii = require('../ascii')
+const ascii = require('../lib/ascii')
 const program = require('commander')
 const version = require('../package.json').version
 const desc = require('../lib/config').default.description
