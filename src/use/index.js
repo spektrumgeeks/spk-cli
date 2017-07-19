@@ -1,9 +1,9 @@
 import ora from 'ora'
 import chalk from 'chalk'
 import load from './load'
-import edit from './edit'
 import files from './files'
 import config from '../config'
+import symbol from 'log-symbols'
 
 export default function(key, { list, safe }) {
   const spinner = ora(config.spinner)
@@ -13,12 +13,12 @@ export default function(key, { list, safe }) {
     .then(payload => files.import(payload))
     .then(payload => files.edit(payload))
     .then(({ template }) => {
-      console.log(`   [${chalk.blue('spk')}] Done importing ${template.name}`)
-      console.log(`   [${chalk.blue('spk')}] Run "npm i" to complete installation`)
+      console.log(symbol.info, ` Done importing ${template.name}`)
+      console.log(symbol.info, ' Run "npm i" to complete installation')
       process.exit(0)
     })
     .catch(error => {
-      console.error(`\n   [${chalk.red('spk')}] ${error}`)
+      console.error(symbol.error, error)
       process.exit(1)
     })
 }

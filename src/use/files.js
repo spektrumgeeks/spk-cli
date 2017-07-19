@@ -87,7 +87,7 @@ export default {
           }
 
           spinner.succeed()
-          resolve(payload)
+          return resolve(payload)
         })
       })
     })

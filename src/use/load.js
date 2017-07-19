@@ -1,3 +1,4 @@
+import fs from 'fs'
 import * as templates from '../../templates'
 
 export default function(payload) {
@@ -14,6 +15,21 @@ export default function(payload) {
     return Promise.reject(payload.template.error)
   }
 
-  spinner.succeed()
-  return Promise.resolve(payload)
+  if (!payload.template.checkfile) {
+    spinner.succeed()
+    spinner.warn(' No checkfile')
+    return Promise.resolve(payload)
+  }
+
+  return new Promise((resolve, reject) => {
+    fs.access(payload.template.checkfile, fs.constants.R_OK | fs.constants.W_OK, error => {
+      if (error) {
+        spinner.fail()
+        reject(error)
+      }
+
+      spinner.succeed()
+      resolve(payload)
+    })
+  })
 }

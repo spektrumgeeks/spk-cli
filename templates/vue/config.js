@@ -1,6 +1,6 @@
 module.exports = {
   name: 'VueJS webpack SPA',
-  checkfile: 'src/App.vue',
+  checkfile: 'build/vue-loader.conf.js',
   tree: {
     import: 'templates/vue/tree/',
     delete: [
