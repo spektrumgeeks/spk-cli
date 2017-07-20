@@ -13,19 +13,14 @@ export function parseKey(pkg, edit) {
 
   // concat strings
   if (concat && typeof pkg === 'string') return pkg + concat.glue + concat.string
-
   // merge objects
   if (merge && typeof pkg === 'object') return { ...pkg, ...merge }
-
   // push array
   if (push && Array.isArray(pkg)) return [ ...pkg, ...push ]
-
   // replace value
   if (replace) return replace
-
   // new prop
   if (!pkg) return value
-
   // fallback to src
   return pkg
 }

@@ -1,6 +1,11 @@
 import fs from 'fs'
 import * as templates from '../../templates'
 
+const list = Object.keys(templates)
+  .filter(name => name !== 'default')
+  .map(name => `\t${name}`)
+  .join('\n')
+
 export default function(payload) {
   const { key, spinner } = payload
 
@@ -9,10 +14,9 @@ export default function(payload) {
     : (!templates[key]) ? { error: ` No templates by the name "${key}"` }
     : templates[key]
 
-  // TODO: list all templates
   if (payload.template.error) {
     spinner.fail()
-    return Promise.reject(payload.template.error)
+    return Promise.reject(`${payload.template.error}. Available templates:\n${list}`)
   }
 
   if (!payload.template.checkfile) {
