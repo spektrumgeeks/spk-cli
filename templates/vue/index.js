@@ -1,12 +1,10 @@
 module.exports = {
+  key: 'vue',
   name: 'VueJS webpack SPA',
   checkfile: 'build/vue-loader.conf.js',
-  tree: {
-    import: 'templates/vue/tree/',
-    delete: [
-      'src/assets/logo.png',
-      'src/components/Hello.vue'
-    ]
+  files: {
+    import: 'template',
+    delete: ['src/assets/logo.png', 'src/components/Hello.vue']
   },
   edit: {
     devDependencies: {

@@ -1,3 +1,10 @@
+export function listTemplates(templates) {
+  return Object.keys(templates)
+    .filter(name => name !== 'default')
+    .map(name => `\t- ${name}`)
+    .join('\n')
+}
+
 export function parseKey(pkg, edit) {
   let { push, merge, filter, concat, replace } = edit
   let value = push || merge || filter || concat || replace

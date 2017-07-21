@@ -1,22 +1,22 @@
 import fs from 'fs'
 import del from 'del'
-import path from 'path'
 import { ncp } from 'ncp'
+import config from '../config'
 import { parseKey } from './helpers'
 
 export default {
-  // delete files specified in template's config.tree.delete
+  // delete files specified in template's config.files.delete
   delete(payload) {
     const { template, spinner, safe } = payload
     spinner.start(' Delete files')
 
-    if (!template.tree || !template.tree.delete || safe) {
+    if (!template.files || !template.files.delete || safe) {
       spinner.succeed(` ${(safe) ? '[safe mode] ' : ''}No files to delete`)
       return Promise.resolve(payload)
     }
 
     try {
-      return del(template.tree.delete).then(() => {
+      return del(template.files.delete).then(() => {
         spinner.succeed()
         return Promise.resolve(payload)
       })
@@ -26,19 +26,19 @@ export default {
     }
   },
 
-  // import files from template's config.tree.import
+  // import files from template's config.files.import
   import(payload) {
     const { template, spinner, safe } = payload
     let fixtures = (safe) ? { pre: '[safe mode] ', post: ' without overwriting' } : {}
     spinner.start(` ${fixtures.pre || ''}Import files${fixtures.post || ''}`)
 
-    if (!template.tree || !template.tree.import) {
+    if (!template.files || !template.files.import) {
       spinner.succeed(` ${fixtures.pre || ''}No files to import`)
       return Promise.resolve(payload)
     }
 
     return new Promise((resolve, reject) => {
-      let src = `${__dirname.split(path.sep).slice(0, -2).join('/')}/${template.tree.import}`
+      let src = `${config.root}/templates/${template.key}/${template.files.import}`
       ncp(src, process.cwd(), { clobber: !safe }, error => {
         if (error) {
           spinner.fail()

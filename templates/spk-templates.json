@@ -1,0 +1,6 @@
+{
+  "vue": {
+    "git": "git@bitbucket.org:spektrummedia/vue-spk-template.git",
+    "dir": "vue"
+  }
+}
