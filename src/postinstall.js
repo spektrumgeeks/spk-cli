@@ -1,6 +1,6 @@
 import fs from 'fs'
-import del from 'del'
 import path from 'path'
+import rimraf from 'rimraf'
 import git from 'simple-git'
 import config from './config'
 import symbol from 'log-symbols'
@@ -19,7 +19,7 @@ git(config.root).clone(config.repo, 'templates', error => {
       process.exit(1)
     }
 
-    fs.rmdir(path.resolve(config.root, 'templates/.git'), error => {
+    rimraf(path.resolve(config.root, 'templates/.git'), error => {
       if (error) console.log(symbol.warn, 'Could not remove templates/ .git repo\n\n', error)
       process.exit(0)
     })
