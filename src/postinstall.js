@@ -18,10 +18,5 @@ git(config.root).clone(config.repo, 'templates', error => {
       console.log(symbol.warn, 'Could not create .gitstate file\n\n', error)
       process.exit(1)
     }
-
-    rimraf(path.resolve(config.root, 'templates/.git'), error => {
-      if (error) console.log(symbol.warn, 'Could not remove templates/ .git repo\n\n', error)
-      process.exit(0)
-    })
   })
 })
