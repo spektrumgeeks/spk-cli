@@ -32,18 +32,18 @@ export default function() {
     try { return del(this.template.files.delete) }
     catch (error) { return Promise.reject(error) }
   }).then(() => {
-    let msg = (this.safe) ? ' [safe mode] Copying files without overwriting' : ' Copying files'
+    let msg = (this.options.safe) ? ' [safe mode] Copying files without overwriting' : ' Copying files'
     this.spinner.succeed().start(msg)
 
-    if (!template.files || !template.files.import) {
+    if (!this.template.files || !this.template.files.import) {
       this.spinner.succeed(' No files to import')
       return Promise.resolve()
     }
 
     return new Promise((resolve, reject) => {
-      const filter = filename => !~['spk-template.json', '.git'].indexOf(filename)
+      const filter = file => !(~file.indexOf('spk-template.json') || ~file.indexOf('.git'))
       this.template.files.import.forEach(src => {
-        ncp(src, process.cwd(), { filter, clobber: !safe }, err => {
+        ncp(path.resolve(root, src), process.cwd(), { filter, clobber: !this.options.safe }, err => {
           if (err) reject(err)
         })
       })
@@ -73,7 +73,7 @@ export default function() {
         fs.writeFile('./package.json', JSON.stringify(pkg, null, 2), 'utf8', error => {
           if (error) return reject(error)
           this.spinner.succeed()
-          resolve(payload)
+          resolve()
         })
       })
     })

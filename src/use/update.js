@@ -51,11 +51,11 @@ export default function() {
         try { state = JSON.parse(state) }
         catch (err) { reject(err) }
 
-        if (!state[key]) {
+        if (!state[this.key]) {
           // git clone if template is not present
           git(src.templates).clone(map.repo, map.name, err => {
             if (err) return reject(err)
-            state[key] = true
+            state[this.key] = true
             save(state)
           })
         } else {
