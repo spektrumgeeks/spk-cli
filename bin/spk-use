@@ -1,8 +1,8 @@
 #!/usr/bin/env node
 
 const path = require('path')
-const use = require('../lib/use').default
 const program = require('commander')
+const use = require('../lib/use').default
 
 program
   .option('-l, --list', 'List the template\'s contents')
@@ -10,4 +10,7 @@ program
   .option('--skip-update', 'Skip pre import template update')
   .parse(process.argv)
 
-use(program.args[0], program)
+use({
+  key: program.args[0],
+  options: program
+})

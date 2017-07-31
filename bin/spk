@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
-const ascii = require('../lib/ascii')
 const program = require('commander')
+const ascii = require('../lib/ascii').default
+const config = require('../lib/config').default
 const version = require('../package.json').version
-const desc = require('../lib/config').default.description
 
 program
   .version(version)
-  .description(desc + ascii)
+  .description(config.description + ascii)
   .command('use [template]', 'Get shit done with a project template').alias('u')
   .command('run [tool]', 'Run a processing tool on local assets').alias('r')
   .parse(process.argv)

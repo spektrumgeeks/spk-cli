@@ -1,73 +1,70 @@
 import fs from 'fs'
-import config from '../config'
-import { clone, pull } from './git'
-import { listTemplates as list } from './helpers'
+import path from 'path'
+import git from 'simple-git'
 
-const templates = require('../../templates/spk-templates.json')
-
-// assess repo states and clone/pull
-export default function(payload) {
-  const { key, spinner, skipUpdate } = payload
-  const templatesRoot = `${config.root}/templates`
-  let template
-
-  spinner.start(' Update template')
-
-  if (skipUpdate) {
-    spinner.warn(' Skipping update')
-    return Promise.resolve(payload)
-  }
-
-  template = (!key) ? { error: ' No template name provided' }
-    : (!templates[key]) ? { error: ` No templates by the name "${key}"` }
-    : templates[key]
-
-  if (template.error) {
-    spinner.fail()
-    return Promise.reject(`${template.error}. Available templates:\n${list(templates)}`)
+// assess repo state, clone/pull and update state
+export default function() {
+  const src = {
+    templates: path.resolve(this.pwd, 'templates/'),
+    gitstate: path.resolve(this.pwd, 'templates/.gitstate')
   }
 
   return new Promise((resolve, reject) => {
-    // load status data
-    fs.readFile(`${templatesRoot}/.gitstatus`, 'utf8', (error, status) => {
-      let gitOp
+    this.spinner.start(' Update template maps')
 
-      if (error) {
-        spinner.fail()
-        return reject(error)
-      }
+    // update template maps
+    git(src.templates).pull(err => {
+      if (err) return reject(err)
 
-      try {
-        status = JSON.parse(status)
-      } catch (error) {
-        spinner.fail()
-        return reject(error)
-      }
+      this.spinner.succeed().start(' Update template')
 
-      if (!status[key]) {
-        gitOp = clone(template, templatesRoot, template)
-        status[key] = true
-      } else {
-        gitOp = pull(`${templatesRoot}/${key}`)
-      }
+      const maps = require(path.resolve(this.pwd, 'templates/index.json'))
+      const list = Object.keys(maps)
+        .filter(name => name !== 'default')
+        .map(name => `\t- ${name}`)
+        .join('\n')
 
-      Promise.all([gitOp]).then(() => {
-        // write status data back to disk
-        fs.writeFile(`${templatesRoot}/.gitstatus`, JSON.stringify(status, null, 2), 'utf8', error => {
-          if (error) {
-            spinner.fail()
-            return reject(error)
-          }
+      // resolve template map
+      const map = (!this.key) ? { error: ' No template name provided' }
+        : (!maps[this.key]) ? { error: ` No templates by the name "${this.key}"` }
+        : maps[this.key]
 
-          // script success exit point
-          spinner.succeed()
-          resolve(payload)
+      const save = state => {
+        fs.writeFile(src.gitstate, JSON.stringify(state, null, 2), 'utf8', error => {
+          if (error) return reject(error)
+          this.spinner.succeed()
+          resolve()
         })
-      })
-      // catch clone/pull errors
-      .catch(error => {
-        spinner.fail()
-        reject(` Could not process the repo\n${error}`)
+      }
+
+      if (map.error) return reject(`${map.error}. Available templates:\n${list}`)
+
+      if (this.options.skipUpdate) {
+        this.spinner.warn(' Skipping update')
+        return resolve()
+      }
+
+      // load and check repo state
+      fs.readFile(src.gitstate, 'utf8', (error, state) => {
+        if (error) return reject(error)
+
+        try { state = JSON.parse(state) }
+        catch (err) { reject(err) }
+
+        if (!state[key]) {
+          // git clone if template is not present
+          git(src.templates).clone(map.repo, map.name, err => {
+            if (err) return reject(err)
+            state[key] = true
+            save(state)
+          })
+        } else {
+          // git pull template repo
+          git(path.resolve(src.templates, map.name)).pull(err => {
+            if (err) return reject(err)
+            save(state)
+          })
+        }
       })
     })
   })
