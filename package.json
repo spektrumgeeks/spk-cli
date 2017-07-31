@@ -5,7 +5,7 @@
   "description": "A command-line tool to help setting up projects following our guidelines.",
   "main": "index.js",
   "scripts": {
-    "postinstall": "npm run build && node ./lib/postinstall.js",
+    "postinstall": "babel src -d lib --copy-files && node ./lib/postinstall.js",
     "test": "echo \"No tests\" && exit 1",
     "build": "babel src -d lib --copy-files",
     "dev": "babel src --watch -d lib --copy-files"
