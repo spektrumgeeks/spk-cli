@@ -1,65 +1,43 @@
 import fs from 'fs'
 import del from 'del'
 import path from 'path'
-import { ncp } from 'ncp'
+import copy from 'recursive-copy'
 import { parseKey } from './helpers'
 
 export default function() {
   const root = path.resolve(this.pwd, 'templates', this.key)
-  this.template = require(path.resolve(root, 'spk-template.json'))
-  this.spinner.start(' Load template')
 
+  this.spinner.succeed().start(' Load template')
+  this.template = require(path.resolve(root, 'template.json'))
+
+  if (!this.template.checkfile) return Promise.resolve()
   return new Promise((resolve, reject) => {
-    if (!this.template.checkfile) {
-      this.spinner.succeed()
-      return resolve()
-    }
-
     fs.access(this.template.checkfile, fs.constants.R_OK | fs.constants.W_OK, error => {
       if (error) return reject(` Missing checkfile, are you in the right directory?\n\n   ${error}`)
-      this.spinner.succeed()
       resolve()
     })
   }).then(() => {
-    this.spinner.start(' Delete files')
+    this.spinner.succeed().start(' Remove unnecessary files')
 
-    if (!this.template.files || !this.template.files.delete || this.options.safe) {
-      let msg = (this.options.safe) ? ' [safe mode] Skipping file deletion' : ' No files to delete'
-      this.spinner.succeed(msg)
-      return Promise.resolve()
-    }
-
-    try { return del(this.template.files.delete) }
-    catch (error) { return Promise.reject(error) }
+    if (!this.template.remove || this.options.safe) return Promise.resolve()
+    return del(this.template.remove)
   }).then(() => {
-    let msg = (this.options.safe) ? ' [safe mode] Copying files without overwriting' : ' Copying files'
-    this.spinner.succeed().start(msg)
+    let { ignore = [] } = this.template
+    let filter = ['**/*', '!.git/**', '!template.json', ...ignore.map(f => '!' + f)]
+    console.log(filter)
+    this.spinner.succeed().start(' Copy template files')
 
-    if (!this.template.files || !this.template.files.import) {
-      this.spinner.succeed(' No files to import')
-      return Promise.resolve()
-    }
-
-    return new Promise((resolve, reject) => {
-      const filter = file => !(~file.indexOf('spk-template.json') || ~file.indexOf('.git'))
-      this.template.files.import.forEach(src => {
-        ncp(path.resolve(root, src), process.cwd(), { filter, clobber: !this.options.safe }, err => {
-          if (err) reject(err)
-        })
-      })
-
-      this.spinner.succeed()
-      resolve()
+    return copy(root, process.cwd(), {
+      filter,
+      dot: true,
+      overwrite: !this.options.safe
     })
   }).then(() => {
     let edit = this.template.edit
-    this.spinner.start(' Edit package')
 
-    if (!edit) {
-      this.spinner.succeed(' Nothing to edit')
-      return Promise.resolve()
-    }
+    this.spinner.succeed().start(' Edit package')
 
+    if (!edit) return Promise.resolve()
     return new Promise((resolve, reject) => {
       fs.readFile('./package.json', 'utf8', (error, pkg) => {
         if (error) return reject(error)
@@ -72,7 +50,6 @@ export default function() {
 
         fs.writeFile('./package.json', JSON.stringify(pkg, null, 2), 'utf8', error => {
           if (error) return reject(error)
-          this.spinner.succeed()
           resolve()
         })
       })

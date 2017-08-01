@@ -16,6 +16,7 @@ export default function({ key, options }) {
   }
 
   update.call(store).then(() => install.call(store)).then(() => {
+    spinner.succeed()
     console.log(symbol.info, ` Done importing ${store.template.name}`)
     console.log(symbol.info, ' Run "npm i" to complete installation')
     process.exit(0)
