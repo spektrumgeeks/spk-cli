@@ -31,7 +31,7 @@ $ vue init webpack
 $ spk use vue
 ```
 
-The above command clones/pulls the template from [bitbucket.org:spektrummedia/vue-spk-templat](https://bitbucket.org/spektrummedia/vue-spk-template), and removes unnecessary files from your project, copies files you will need for our setup into your project and edits some `package.json` fields (without overwriting what is already there).
+The above command clones/pulls the template from [bitbucket.org:spektrummedia/vue-spk-template](https://bitbucket.org/spektrummedia/vue-spk-template), and removes unnecessary files from your project, copies files you will need for our setup into your project and edits some `package.json` fields (without overwriting what is already there).
 
 ### Adding templates
 
