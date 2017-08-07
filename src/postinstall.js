@@ -65,7 +65,7 @@ inquire.prompt([
 })
 // write store to disk and ensure templates is empty
 .then(() => {
-  spinner.start('Downloading templates master')
+  spinner.start('Downloading templates')
   return Promise.all([
     ...storeSetup(),
     fs.emptyDir(path.resolve(store, 'templates'))
