@@ -40,7 +40,8 @@
     "recursive-copy": "^2.0.6",
     "rimraf": "^2.6.1",
     "shelljs": "^0.7.8",
-    "simple-git": "^1.73.0"
+    "simple-git": "^1.73.0",
+    "wrap-ansi": "^3.0.1"
   },
   "engines": {
     "node": ">= 4.0.0",
