@@ -1,5 +1,5 @@
 import chalk from 'chalk'
-import wrap from 'wrap-ainsi'
+import wrap from 'wrap-ansi'
 import symbols from 'log-symbols'
 
 export default ({ msg, status, whitespace, cols = 60 }) => {
