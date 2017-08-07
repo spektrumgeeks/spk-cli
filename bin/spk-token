@@ -1,0 +1,16 @@
+#!/usr/bin/env node
+
+const program = require('commander')
+const use = require('../lib/token').default
+
+program
+  .usage('Follow the prompt instructions')
+  .description('Set or delete an auth tokenfor use over https')
+  .option('-d, --delete', 'Delete an existing token')
+  .option('-l, --list', 'List set tokens')
+  .parse(process.argv)
+
+use({
+  key: program.args[0],
+  options: program
+})

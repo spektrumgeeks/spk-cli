@@ -18,15 +18,26 @@ export default function() {
       this.spinner.succeed().start(' Update template')
 
       const maps = require(path.resolve(this.pwd, 'templates/index.json'))
-      const list = Object.keys(maps)
-        .filter(name => name !== 'default')
-        .map(name => `\t- ${name}`)
-        .join('\n')
+      const keyMap = {}
+      const keyList = []
+
+      // build template key map
+      Object.keys(maps).filter(key => !~key.indexOf('default')).forEach(key => {
+        let aliases = maps[key].alias
+        keyMap[key] = key
+
+        if (!aliases) return keyList.push(`\t- ${key}`)
+
+        keyList.push(`\t- ${key} (alias: ${aliases})`)
+        aliases.split(' ').forEach(alias => {
+          keyMap[alias] = key
+        })
+      })
 
       // resolve template map
       const map = (!this.key) ? { error: ' No template name provided' }
-        : (!maps[this.key]) ? { error: ` No templates by the name "${this.key}"` }
-        : maps[this.key]
+        : (!keyMap[this.key]) ? { error: ` No template keys corresponding to "${this.key}"` }
+        : maps[ keyMap[this.key] ]
 
       const save = state => {
         fs.writeFile(src.gitstate, JSON.stringify(state, null, 2), 'utf8', error => {
@@ -35,7 +46,7 @@ export default function() {
         })
       }
 
-      if (map.error) return reject(`${map.error}. Available templates:\n${list}`)
+      if (map.error) return reject(`${map.error}. Available templates:\n${keyList.join('\n')}`)
       if (this.options.skipUpdate) return resolve()
 
       // load and check repo state

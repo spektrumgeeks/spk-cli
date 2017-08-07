@@ -1,13 +1,13 @@
 #!/usr/bin/env node
 
 const program = require('commander')
-const ascii = require('../lib/ascii').default
-const config = require('../lib/config').default
 const version = require('../package.json').version
 
 program
   .version(version)
-  .description(config.description + ascii)
-  .command('use [template]', 'Get shit done with a project template').alias('u')
-  .command('run [tool]', 'Run a processing tool on local assets').alias('r')
+  .usage('<command> [options...]')
+  .description('—— SPK template installer and task runner ——')
+  .command('use [template] [option]', 'Get shit done with a project template').alias('u')
+  .command('run [task] [options...]', 'Make shit better by running a task').alias('r')
+  .command('token [options...]', 'Set or delete an auth token')
   .parse(process.argv)

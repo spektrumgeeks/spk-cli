@@ -1,5 +1,5 @@
 // parse
-export function parseKey(pkg, edit) {
+export default function(pkg, edit) {
   let { push, merge, filter, concat, replace } = edit
   let value = push || merge || filter || concat || replace
 

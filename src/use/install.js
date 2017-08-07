@@ -1,8 +1,8 @@
 import fs from 'fs'
 import del from 'del'
 import path from 'path'
+import parseKey from './parser'
 import copy from 'recursive-copy'
-import { parseKey } from './helpers'
 
 export default function() {
   const root = path.resolve(this.pwd, 'templates', this.key)
@@ -35,7 +35,7 @@ export default function() {
     })
   }).then(() => {
     // edit target package.json
-    let edit = this.template.edit
+    let edit = this.template.package
     this.spinner.succeed().start(' Edit package')
 
     if (!edit) return Promise.resolve()

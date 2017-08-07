@@ -1,5 +1,4 @@
 import ora from 'ora'
-import chalk from 'chalk'
 import update from './update'
 import config from '../config'
 import install from './install'

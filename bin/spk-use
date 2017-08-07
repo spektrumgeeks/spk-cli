@@ -1,14 +1,17 @@
 #!/usr/bin/env node
 
-const path = require('path')
 const program = require('commander')
 const use = require('../lib/use').default
 
 program
-  .option('-l, --list', 'List the template\'s contents')
+  .usage('[template] [option]')
+  .description('Install a template in a new or existing project')
+  .option('--no-update', 'Skip pre-install repo updates')
+  .option('-l, --list', 'List available templates')
   .option('-s, --safe', 'Don\'t overwrite or delete files')
-  .option('--skip-update', 'Skip pre import template update')
   .parse(process.argv)
+
+if (!program.args.length) program.help()
 
 use({
   key: program.args[0],
