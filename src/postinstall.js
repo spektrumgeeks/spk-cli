@@ -25,12 +25,15 @@ const storeSetup = () => Object.keys(storeBase).map(key => {
 })
 
 // deliver info about issues with git over ssh
+console.log(`\n\n${ascii}\n\n`)
 echo({
   status: 'info',
-  msg: `<br%><br%>${ascii}<br%><br%>spk-cli uses git to keep templates up to date but can't
-    authenticate connections over ssh if your key uses a passphrase. In such cases you will need to
-    provide a token to connect over https.<br%><%underline><%yellow>To complete installation, access
-    to BitBucket will be required.<%><%><br%>`
+  msg: [
+    'spk-cli uses git to keep templates up to date but can\'t authenticate connections over ssh if',
+    'your key uses a passphrase. In such cases you will need to provide a token to connect over',
+    'https.<%n><%n><%underline><%yellow>To complete installation, access to BitBucket will be',
+    'required.<%><%><%n>'
+  ]
 })
 
 inquire.prompt([
@@ -42,9 +45,11 @@ inquire.prompt([
 
   echo({
     status: 'info',
-    msg: `To generate your BitBucket app password, go to <%underline><%blue>BitBucket settings<%><%>
-      in your account. Under <%underline><%blue>Access management > App passwords<%><%>, generate
-      your token with <%underline>Repositories.Read<%> permissions.<br%>`
+    msg: [
+      'To generate your BitBucket app password, go to <%underline><%blue>BitBucket settings<%><%>',
+      'in your account. Under <%underline><%blue>Access management > App passwords<%><%>, generate',
+      'your token with <%underline>Repositories.Read<%> permissions.<%n>'
+    ]
   })
 
   return inquire.prompt([
@@ -73,7 +78,6 @@ inquire.prompt([
 .catch(err => {
   echo({
     status: 'error',
-    whitespace: true,
     msg: `<%red>An error occured during installation<%>\n\n${err}`
   })
   process.exit(1)
