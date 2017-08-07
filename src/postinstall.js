@@ -1,14 +1,14 @@
+import ora from 'ora'
 import path from 'path'
 import fs from 'fs-extra'
 import echo from './echo'
-import chalk from 'chalk'
 import ascii from './ascii'
 import git from 'simple-git'
 import config from './config'
 import inquire from 'inquirer'
-import symbol from 'log-symbols'
 import resolveRepo from './resolve-repo'
 
+const spinner = ora({ color: 'blue', spinner: config.spinner})
 const store = path.resolve(config.root, 'store')
 
 const storeBase = {
@@ -31,7 +31,7 @@ echo({
   msg: [
     'spk-cli uses git to keep templates up to date but can\'t authenticate connections over ssh if',
     'your key uses a passphrase. In such cases you will need to provide a token to connect over',
-    'https.<%n><%n><%underline><%yellow>To complete installation, access to BitBucket will be',
+    'https.<%n><%n><%underline><%yellow>To complete installation, access to BitBucket is',
     'required.<%><%><%n>'
   ]
 })
@@ -64,21 +64,23 @@ inquire.prompt([
   })
 })
 // write store to disk and ensure templates is empty
-.then(() => Promise.all([
-  ...storeSetup(),
-  fs.emptyDir(path.resolve(store, 'templates'))
-]))
+.then(() => {
+  spinner.start('Downloading templates master')
+  return Promise.all([
+    ...storeSetup(),
+    fs.emptyDir(path.resolve(store, 'templates'))
+  ])
+})
 // clone master repo
 .then(() => new Promise((resolve, reject) => {
   git(store).clone(resolveRepo(config.master), 'templates', error => {
     if (error) return reject('Could not clone templates repo:\n' + error)
+    spinner.succeed()
     process.exit(0)
   })
 }))
 .catch(err => {
-  echo({
-    status: 'error',
-    msg: `<%red>An error occured during installation<%>\n\n${err}`
-  })
+  spinner.fail()
+  echo({ status: 'error', msg: `<%red>An error occured during installation<%>\n\n${err}` })
   process.exit(1)
 })
