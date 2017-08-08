@@ -1,4 +1,4 @@
-import config from './config'
+import config from '../config'
 
 export default ({ provider, repo }) => {
   let auth = config.store.tokens[provider]
