@@ -4,7 +4,7 @@ const program = require('commander')
 const use = require('../lib/use').default
 
 program
-  .usage('[template] [option]')
+  .usage('[uid|alias] [option]')
   .description('Install a template in a new or existing project')
   .option('--no-update', 'Skip pre-install repo updates')
   .option('-l, --list', 'List available templates')
@@ -14,6 +14,6 @@ program
 if (!program.args.length) program.help()
 
 use({
-  key: program.args[0],
+  uid: program.args[0],
   options: program
 })

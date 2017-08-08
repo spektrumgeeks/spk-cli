@@ -1,12 +1,12 @@
 import ora from 'ora'
 import path from 'path'
 import fs from 'fs-extra'
-import echo from './echo'
 import ascii from './ascii'
 import git from 'simple-git'
 import config from './config'
 import inquire from 'inquirer'
-import resolveRepo from './resolve-repo'
+import echo from './utils/echo'
+import resolveRepo from './utils/resolve-repo'
 
 const spinner = ora({ color: 'blue', spinner: config.spinner})
 const store = path.resolve(config.root, 'store')
@@ -65,7 +65,7 @@ inquire.prompt([
 })
 // write store to disk and ensure templates is empty
 .then(() => {
-  spinner.start('Downloading templates')
+  spinner.start('Preparing store')
   return Promise.all([
     ...storeSetup(),
     fs.emptyDir(path.resolve(store, 'templates'))
@@ -73,6 +73,7 @@ inquire.prompt([
 })
 // clone master repo
 .then(() => new Promise((resolve, reject) => {
+  spinner.text = 'Cloning template index'
   git(store).clone(resolveRepo(config.master), 'templates', error => {
     if (error) return reject('Could not clone templates repo:\n' + error)
     spinner.succeed()

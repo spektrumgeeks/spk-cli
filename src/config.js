@@ -1,9 +1,9 @@
 import path from 'path'
 import fs from 'fs-extra'
-import symbols from 'log-symbols'
+import { echo } from './utils'
 
 const root = path.resolve(__dirname, '../')
-const stores = ['gitstate', 'tokens']
+const stores = ['gitstate', 'tokens', 'templates/index']
 
 export default {
   root,
@@ -24,8 +24,11 @@ export default {
       let file = path.resolve(root, 'store', `${key}.json`)
       if (!fs.pathExistsSync(file)) return;
 
-      try { store[key] = fs.readJsonSync(file) }
-      catch (err) { console.error(symbols.error, `Could not load ${key} from the store\n\n`, err) }
+      try {
+        store[key.split('/')[0]] = fs.readJsonSync(file)
+      } catch (err) {
+        echo({ status: 'error', msg: [`Could not load ${key} from the store\n\n`, err] })
+      }
     })
 
     return store
