@@ -8,7 +8,7 @@ Command line tool for importing project templates and running tasks
 Prerequisites: [Node.js](https://nodejs.org/en/) (>=4.x, 6.x preferred), npm version 3+ and [Git](https://git-scm.com/).
 
 ``` bash
-$ npm i -g vue-cli
+$ npm i -g spk-cli
 ```
 
 ### Usage
@@ -16,9 +16,14 @@ $ npm i -g vue-cli
 ``` bash
 # show cli help
 $ spk
+$ spk use
+
+# list templates
+$ spk use -l
+$ spk use --list
 
 # use a template
-$ spk use <template-key>
+$ spk use <template-uid>
 ```
 
 Example:
