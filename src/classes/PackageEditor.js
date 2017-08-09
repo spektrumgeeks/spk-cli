@@ -34,7 +34,7 @@ export class PackageEditor {
           target = [ ...target, ...edits[key] ].filter(item => only(item))
           break;
 
-        case: 'object':
+        case 'object':
           target = { ...target, ...edits[key] }
           break;
 
