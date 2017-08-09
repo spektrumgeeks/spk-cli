@@ -144,7 +144,7 @@ export default function({ uid, options }) {
     return fs.readJson(local).then(data => {
       pkg = data
       spinner.text = 'Editing package.json'
-      pkg.spk = { uid, hash, name: map.name }
+      pkg.spk = { uid, hash, repository: resolveRepo(repo, true) }
 
       // parse local keys against map keys
       Object.keys(map.package).forEach(key => {
