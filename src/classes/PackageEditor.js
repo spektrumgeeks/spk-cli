@@ -26,20 +26,20 @@ export class PackageEditor {
       let type = (Array.isArray(edits[key])) ? 'array' : typeof edits[key]
       let keys = {}
 
-      if (!target) this.fields[key] = edits[key]
-      if (typeof target !== type) return;
+      if (!this.fields[key]) this.fields[key] = edits[key]
+      if (typeof this.fields[key] !== type) return;
       switch (type) {
         case 'array':
           let only = filterDuplicates()
-          target = [ ...target, ...edits[key] ].filter(item => only(item))
+          this.fields[key] = [ ...this.fields[key], ...edits[key] ].filter(item => only(item))
           break;
 
         case 'object':
-          target = { ...target, ...edits[key] }
+          this.fields[key] = { ...this.fields[key], ...edits[key] }
           break;
 
         default:
-          try { target = target + edits[key] }
+          try { this.fields[key] = this.fields[key] + edits[key] }
           catch (e) { return }
       }
     })
