@@ -24,9 +24,9 @@ export class IndexMap {
 
   get list() {
     return this.uids.map(uid => {
-      let { alias, name } = this.index[uid]
-      let entry = `-${name}\n\t> UID: ${uid}`
-      return (!alias) ? entry : entry += `\n\t> Alias: ${alias}`
+      let entry = `\t- ${uid}`
+      let alias = this.index[uid].alias
+      return (!alias) ? entry : entry += `\t\t[ alias: ${alias.split(' ').join(' | ')} ]`
     }).join('\n')
   }
 
