@@ -8,14 +8,13 @@ export class IndexMap {
     this.map = {}
 
     this.uids.forEach(uid => {
-      let alias = this.index[uid].alias || ''
+      let alias = this.index[uid].alias || []
 
       if (this.map[uid]) throw new Error(`Duplicate UID ${uid} in template index.`)
       this.map[uid] = [uid]
 
-      alias.split(' ').forEach(a => {
-        if (!a.length) return;
-        if (!this.map[a]) return (this.map[a] = [uid])
+      alias.forEach(a => {
+        if (!this.map[a]) this.map[a] = []
         if (~this.map[a].indexOf(uid)) return;
         this.map[a].push(uid)
       })
@@ -26,7 +25,7 @@ export class IndexMap {
     return this.uids.map(uid => {
       let entry = `\t- ${uid}`
       let alias = this.index[uid].alias
-      return (!alias) ? entry : entry += `\t\t[ alias: ${alias.split(' ').join(' | ')} ]`
+      return (!alias) ? entry : entry += `\t\t[ alias: ${alias.join(' | ')} ]`
     }).join('\n')
   }
 

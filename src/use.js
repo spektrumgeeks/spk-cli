@@ -5,8 +5,8 @@ import fs from 'fs-extra'
 import git from 'simple-git'
 import config from './config'
 import copy from 'recursive-copy'
-import { IndexMap } from './classes'
-import { echo, parseFields, resolveRepo } from './utils'
+import { echo, resolveRepo } from './utils'
+import { IndexMap, PackageEditor } from './classes'
 
 const cwd = process.cwd()
 const store = path.resolve(config.root, 'store')
@@ -139,26 +139,16 @@ export default function({ uid, options }) {
 
     if (!map.package) return Promise.resolve()
     if (map.package && !exists) return Promise.reject('Missing local package.json')
+
     spinner.text = 'Loading package.json'
+    pkg = new PackageEditor(local, map.package)
 
-    return fs.readJson(local).then(data => {
-      pkg = data
-      spinner.text = 'Editing package.json'
-      pkg.spk = { uid, hash, repository: resolveRepo(repo, true) }
+    spinner.text = 'Editing package.json'
+    pkg.meta = { uid, hash, repository: resolveRepo(repo, true) }
 
-      // parse local keys against map keys
-      Object.keys(map.package).forEach(key => {
-        spinner.text = `Editing package.json -> ${key}`
-        pkg[key] = parseFields(pkg[key], map.package[key])
-      })
-
-      return Promise.resolve()
-    })
-
-    // save package
-    .then(() => {
+    return pkg.parse().then(() => {
       spinner.text = 'Saving package.json'
-      return fs.writeJson(local, pkg, { spaces: 2 })
+      return pkg.resolve()
     })
   })
 
