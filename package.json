@@ -1,6 +1,6 @@
 {
   "name": "spk-cli",
-  "version": "0.7.5",
+  "version": "0.7.6",
   "description": "Command line tool for importing project templates and running tasks.",
   "author": "Nicolas Udy <nudy@spektrummedia.com>",
   "license": "MIT",
