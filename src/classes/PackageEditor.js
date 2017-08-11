@@ -4,6 +4,7 @@ export class PackageEditor {
   constructor(target, { merge, remove, replace }) {
     this.path = target
     this.mutations = {}
+    this.parsed = false
     this.fields = fs.readJsonSync(target)
 
     if (merge) this.mutations.merge = merge
@@ -11,12 +12,9 @@ export class PackageEditor {
     if (replace) this.mutations.replace = replace
   }
 
+  // set template meta
   set meta(meta) {
     this.fields['spk-meta'] = meta
-  }
-
-  parse() {
-    return Promise.all(Object.keys(this.mutations).map(mutation => this[mutation]()))
   }
 
   merge() {
@@ -68,8 +66,16 @@ export class PackageEditor {
     return Promise.resolve()
   }
 
+  parse() {
+    return Promise.all(Object.keys(this.mutations).map(mutation => this[mutation]())).then(()=> {
+      this.parsed = true
+    })
+  }
+
   resolve() {
-    return fs.writeJson(this.path, this.fields, { spaces: 2 })
+    writeToDisk = () => fs.writeJson(this.path, this.fields, { spaces: 2 })
+    if (!this.parsed) return this.parse().then(() => writeToDisk())
+    return writeToDisk()
   }
 }
 

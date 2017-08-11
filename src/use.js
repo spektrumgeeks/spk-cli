@@ -61,8 +61,11 @@ export default function({ uid, options }) {
         fs.emptyDir(path.resolve(templates, uid)).then(() => {
           git(templates).clone(resolveRepo(repo), uid, err => {
             if (err) return reject(err)
+            spinner.text = 'Saving store state'
             gitstate[uid] = true
-            resolve(true)
+            fs.writeJson(path.resolve(store, 'gitstate.json'), gitstate, { spaces: 2 }).then(() => {
+              resolve()
+            })
           })
         })
       } else {
@@ -73,13 +76,6 @@ export default function({ uid, options }) {
           resolve()
         })
       }
-    })
-
-    // save gitstate if changed
-    .then(save => {
-      if (!save) return Promise.resolve()
-      spinner.text = 'Saving store state'
-      return fs.writeJson(path.resolve(store, 'gitstate.json'), gitstate, { spaces: 2 })
     })
   })
 
@@ -97,12 +93,14 @@ export default function({ uid, options }) {
   .then(() => {
     if (!map.checkfile) return Promise.resolve(true)
     spinner.text = 'Verifying checkfile'
-    return fs.pathExists(path.resolve(cwd, map.checkfile))
+    return fs.pathExists(path.resolve(cwd, map.checkfile)).then(exists => {
+      if (!exists) return Promise.reject(`Missing checkfile "${map.checkfile}".`)
+      return Promise.resolve()
+    })
   })
 
   // remove assets
-  .then(exists => {
-    if (!exists) return Promise.reject(`Missing checkfile "${map.checkfile}".`)
+  .then(() => {
     if (!map.remove || safe) return Promise.resolve()
     spinner.text = 'Removing unnecessary assets'
     return del(map.remove)
@@ -134,11 +132,13 @@ export default function({ uid, options }) {
   // edit target package.json if present
   .then(() => {
     let local = path.resolve(cwd, 'package.json')
-    let exists = fs.pathExistsSync(local)
     let pkg
 
     if (!map.package) return Promise.resolve()
-    if (map.package && !exists) return Promise.reject('Missing local package.json')
+
+    if (map.package && !fs.pathExistsSync(local)) {
+      return Promise.reject('Missing local package.json')
+    }
 
     spinner.text = 'Loading package.json'
     pkg = new PackageEditor(local, map.package)
