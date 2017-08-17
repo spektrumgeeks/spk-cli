@@ -1,7 +1,7 @@
 import config from '../config'
 
-export default ({ provider, repo }, url) => {
-  let auth = config.store.tokens[provider]
+export default ({ provider, repo }, url, auth) => {
+  auth = auth || config.store.tokens[provider]
   repo = repo.replace(/\.git$/, '')
 
   return (url) ? `https://${auth.url}/${repo}`

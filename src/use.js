@@ -5,7 +5,7 @@ import fs from 'fs-extra'
 import git from 'simple-git'
 import config from './config'
 import copy from 'recursive-copy'
-import { echo, resolveRepo } from './utils'
+import { log, resolveRepo } from './utils'
 import { IndexMap, PackageEditor } from './classes'
 
 const cwd = process.cwd()
@@ -155,7 +155,7 @@ export default function({ uid, options }) {
   // all done
   .then(() => {
     spinner.succeed(`Done importing ${map.name}`)
-    echo({ status: 'info', msg: 'Don\'t forget to run <%bold>npm i<%>' })
+    log.status('info').echo('Don\'t forget to run <%bold>npm i<%>')
     process.exit(0)
   })
 
@@ -163,7 +163,7 @@ export default function({ uid, options }) {
   .catch(error => {
     spinner.fail()
     if (typeof error !== 'string') error = error + ''
-    echo({ status: 'error', msg: error })
+    log.status('error').echo(error)
     process.exit(1)
   })
 }

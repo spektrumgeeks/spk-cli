@@ -1,6 +1,6 @@
 import path from 'path'
 import fs from 'fs-extra'
-import { echo } from './utils'
+import { log } from './utils'
 
 const root = path.resolve(__dirname, '../')
 const stores = ['gitstate', 'tokens', 'templates/index']
@@ -27,7 +27,7 @@ export default {
       try {
         store[key.split('/')[0]] = fs.readJsonSync(file)
       } catch (err) {
-        echo({ status: 'error', msg: [`Could not load ${key} from the store\n\n`, err] })
+        log.status('error').echo(`Could not load ${key} from the store\n\n`, err)
       }
     })
 
