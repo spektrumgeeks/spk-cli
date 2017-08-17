@@ -1,9 +1,0 @@
-{
-  "url": "%url%",
-  "env": "%env%",
-  "vcs": "%vcs%",
-  "indexed": %index%,
-  "blog": {
-    "enabled": %blog%
-  }
-}

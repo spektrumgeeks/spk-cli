@@ -5,7 +5,7 @@ import symbols from 'log-symbols'
 import replace from 'replace-in-file'
 
 fs.readJson(path.resolve(__dirname, 'tests/replace.test.json'))
-.then(({ placeholder, queries }) => {
+.then(({ queries, placeholder, seperator = '=' }) => {
   let sources = {}
   let questions = []
 
@@ -13,17 +13,22 @@ fs.readJson(path.resolve(__dirname, 'tests/replace.test.json'))
     sources[src] = queries[src].length
     questions.push(...queries[src].map(query => {
       let type = 'input'
-      let filter = input => (input || input === false || input.length) ? input : '%%'
       let key, name, message, choices
 
+      const filter = input => {
+        let falsy = input === false || input === 0
+        let notEmpty = input && input.length && input !== '%%'
+        return (falsy || notEmpty) ? input : undefined
+      }
+
       if (typeof query === 'string') {
-        ;[name, message] = (~query.indexOf(':')) ? query.split(':') : [query, query]
+        ;[name, message] = (~query.indexOf(seperator)) ? query.split(seperator) : [query, query]
         return { name, message, type, filter }
       }
 
       type = 'confirm'
       key = Object.keys(query)[0]
-      ;[name, message] = (~key.indexOf(':')) ? key.split(':') : [key, key]
+      ;[name, message] = (~key.indexOf(seperator)) ? key.split(seperator) : [key, key]
 
       if (Array.isArray(query[key])) {
         type = 'list'
@@ -47,7 +52,7 @@ fs.readJson(path.resolve(__dirname, 'tests/replace.test.json'))
       let to = []
       let files = src.replace(' ', '').split(',').map(pth => pth.replace(/^\//, ''))
       let scope = greps.splice(0, sources[src])
-        .filter(([grep, sub]) => sub === false || (sub && sub !== '%%'))
+        .filter(([grep, sub]) => sub !== undefined)
 
       scope.forEach(([grep, sub]) => {
         from.push(eval(`/${placeholder + grep + placeholder}/g`))
@@ -61,7 +66,6 @@ fs.readJson(path.resolve(__dirname, 'tests/replace.test.json'))
   })
 })
 .then(changeset => {
-  console.log(symbols.success, 'replace complete:')
   changeset.forEach(change => console.log(change))
 })
 .catch(err => console.log(symbols.error, err))

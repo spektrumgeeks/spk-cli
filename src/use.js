@@ -4,7 +4,9 @@ import path from 'path'
 import fs from 'fs-extra'
 import git from 'simple-git'
 import config from './config'
+import inquire from 'inquirer'
 import copy from 'recursive-copy'
+import replace from 'replace-in-file'
 import { log, resolveRepo } from './utils'
 import { IndexMap, PackageEditor } from './classes'
 
@@ -152,9 +154,81 @@ export default function({ uid, options }) {
     })
   })
 
+  // find and replace
+  .then(() => {
+    if (!map.replace) return Promise.resolve()
+
+    spinner.succeed(`Done. Starting find-and-replace...`)
+    const { queries, placeholder, seperator = '=' } = map.replace
+    let sources = {}
+    let questions = []
+
+    Object.keys(queries).forEach(src => {
+      sources[src] = queries[src].length
+      questions.push(...queries[src].map(query => {
+        let type = 'input'
+        let key, name, message, choices
+
+        const filter = input => {
+          let falsy = input === false || input === 0
+          let notEmpty = input && input.length && input !== '%%'
+          return (falsy || notEmpty) ? input : undefined
+        }
+
+        if (typeof query === 'string') {
+          ;[name, message] = (~query.indexOf(seperator)) ? query.split(seperator) : [query, query]
+          return { name, message, type, filter }
+        }
+
+        type = 'confirm'
+        key = Object.keys(query)[0]
+        ;[name, message] = (~key.indexOf(seperator)) ? key.split(seperator) : [key, key]
+
+        if (Array.isArray(query[key])) {
+          type = 'list'
+          choices = query[key].map(opt => {
+            if (!~opt.indexOf(':')) return opt
+            let [value, name] = opt.split(':')
+            return { name, value }
+          })
+        }
+
+        return { name, message, type, choices, filter }
+      }))
+    })
+
+    return inquire.prompt(questions).then(answers => {
+      const greps = Object.keys(answers).map(key => [key, answers[key]])
+
+      Object.keys(sources).map(src => {
+        let from = []
+        let to = []
+        let files = src.replace(' ', '').split(',').map(pth => pth.replace(/^\//, ''))
+        let scope = greps.splice(0, sources[src])
+          .filter(([grep, sub]) => sub !== undefined)
+
+        scope.forEach(([grep, sub]) => {
+          from.push(eval(`/${placeholder + grep + placeholder}/g`))
+          to.push(sub)
+        })
+
+        return replace.sync({ files, from, to, allowEmptyPaths: true })
+      })
+      .forEach(changeset => {
+        if (!changeset || !changeset.length) return;
+
+        changeset.forEach(change => {
+          spinner.succeed(`Replaced values in ${change.replace(process.cwd(), '')}`)
+        })
+      })
+
+      return Promise.resolve()
+    })
+  })
+
   // all done
   .then(() => {
-    spinner.succeed(`Done importing ${map.name}`)
+    spinner.succeed(`Import of ${map.name} complete`)
     log.status('info').echo('Don\'t forget to run <%bold>npm i<%>')
     process.exit(0)
   })

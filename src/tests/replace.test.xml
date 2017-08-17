@@ -1,5 +1,0 @@
-<replaceTest>
-  <index value="%index%"/>
-  <email value="%email%"/>
-  <database value="table:%db%;user:%user%;pass:%pass%;email:%email%;"/>
-</replaceTest>

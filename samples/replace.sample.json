@@ -1,9 +1,9 @@
 {
   "placeholder": "%",
   "queries": {
-    "lib/tests/**/*": ["email", "url", "user:DB user", "pass:DB pass", "db:DB table", { "index": true }],
+    "lib/tests/**/*": ["email", "url", "user=DB user", "pass=DB pass", "db=DB table", { "index": true }],
     "lib/tests/nested/replace-nested.test.json": [
-      { "vcs": ["git", "mercurial", "%%:none"] },
+      { "vcs": ["git", "mercurial", "%%=none"] },
       { "blog:enable blog feature": true },
       { "env:environment": ["development", "staging", "production"] }
     ]
