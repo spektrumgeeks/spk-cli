@@ -16,7 +16,6 @@ const templates = path.resolve(store, 'templates')
 const spinner = ora({ color: 'blue', spinner: config.spinner})
 const { gitstate, tokens } = config.store
 
-// use : update and apply a template
 export default function({ uid, options }) {
   const { list, safe, noUpdate } = options
   let index, repo, map, hash
@@ -160,7 +159,7 @@ export default function({ uid, options }) {
     if (!map.replace) return Promise.resolve()
 
     spinner.succeed(`Done. Starting find-and-replace...`)
-    const { queries, placeholder, seperator = '=' } = map.replace
+    const { queries, placeholder } = map.replace
     let scopes = {}
     let questions = []
 
@@ -170,23 +169,27 @@ export default function({ uid, options }) {
       scopes[src] = queries[src].length
       questions.push(...queries[src].map(query => {
         let type = 'input'
-        let key, name, message, choices
+        let key, name, message, choices, default, params
 
         // convert empty answers to undefined
         const filter = input => {
           let falsy = input === false || input === 0
-          let notEmpty = input && input.length && input !== '%%'
+          let notEmpty = input && input.length && input !== placeholder + placeholder
           return (falsy || notEmpty) ? input : undefined
         }
 
         if (typeof query === 'string') {
-          ;[name, message] = (~query.indexOf(seperator)) ? query.split(seperator) : [query, query]
-          return { name, message, type, filter }
+          ;[name, message] = (~query.indexOf(':')) ? query.split(':') : [query, query]
+          params = { name, message, type, filter }
+          if (!~message.indexOf('=')) return params
+          ;[message, default] = message.split('=')
+          return params
         }
 
         type = 'confirm'
         key = Object.keys(query)[0]
-        ;[name, message] = (~key.indexOf(seperator)) ? key.split(seperator) : [key, key]
+        ;[name, message] = (~key.indexOf(':')) ? key.split(':') : [key, key]
+        params = { name, message, type, filter }
 
         if (Array.isArray(query[key])) {
           type = 'list'
@@ -197,7 +200,12 @@ export default function({ uid, options }) {
           })
         }
 
-        return { name, message, type, choices, filter }
+        if (~message.indexOf('=')) [message, default] = message.split('=')
+        if (type === 'confirm') default = query[key]
+
+        return (!default)
+          ? { name, message, type, choices, filter }
+          : { name, message, type, choices, filter, default }
       }))
     })
 

@@ -1,7 +1,7 @@
 #!/usr/bin/env node
 
 const program = require('commander')
-const use = require('../lib/use').default
+const install = require('../lib/install').default
 
 program
   .usage('[uid|alias] [option]')
@@ -13,7 +13,7 @@ program
 
 if (!program.args.length && !program.list) program.help()
 
-use({
+install({
   uid: program.args[0],
   options: program
 })

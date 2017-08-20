@@ -3,27 +3,29 @@
 
 Command line tool for importing project templates and running tasks
 
-### Installation
+## Installation
 
 Prerequisites: [Node.js](https://nodejs.org/en/) (>=4.x, 6.x preferred), npm version 3+ and [Git](https://git-scm.com/).
 
 ``` bash
-$ npm i -g spk-cli
+$ npm i -g https://github.com/spektrummedia/spk-cli.git
 ```
 
-### Usage
+>_Note_: this tool uses git to keep templates up to date but can\'t authenticate connections over `ssh` if your key uses a passphrase. In such cases you will need to provide a token to connect over `https`. See tokens section below for more information.
+
+## Usage
+### Install
+
 
 ``` bash
-# show cli help
-$ spk
-$ spk use
+$ spk <command> [options...]
 
-# list templates
-$ spk use -l
-$ spk use --list
+# install command ( alias: i )
+$ spk install <template>
+$ spk install --list
 
-# use a template
-$ spk use <template-uid>
+# run command
+$ spk run <tool> [options...]
 ```
 
 Example:
