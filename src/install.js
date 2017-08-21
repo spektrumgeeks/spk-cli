@@ -169,7 +169,7 @@ export default function({ uid, options }) {
       scopes[src] = queries[src].length
       questions.push(...queries[src].map(query => {
         let type = 'input'
-        let key, name, message, choices, default, params
+        let key, name, message, choices, def, params
 
         // convert empty answers to undefined
         const filter = input => {
@@ -182,7 +182,7 @@ export default function({ uid, options }) {
           ;[name, message] = (~query.indexOf(':')) ? query.split(':') : [query, query]
           params = { name, message, type, filter }
           if (!~message.indexOf('=')) return params
-          ;[message, default] = message.split('=')
+          ;[message, def] = message.split('=')
           return params
         }
 
@@ -200,12 +200,12 @@ export default function({ uid, options }) {
           })
         }
 
-        if (~message.indexOf('=')) [message, default] = message.split('=')
-        if (type === 'confirm') default = query[key]
+        if (~message.indexOf('=')) [message, def] = message.split('=')
+        if (type === 'confirm') def = query[key]
 
-        return (!default)
+        return (!def)
           ? { name, message, type, choices, filter }
-          : { name, message, type, choices, filter, default }
+          : { name, message, type, choices, filter, def }
       }))
     })
 
